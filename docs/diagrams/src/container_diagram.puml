@@ -9,7 +9,7 @@
 LAYOUT_WITH_LEGEND()
 
 
-title Container diagram for Internet Banking System
+title Container diagram for Portfolio Management App
 
 Person(customer  , Customer , "<$user> <$mobile_user>\n A member of the investment club" )
 
