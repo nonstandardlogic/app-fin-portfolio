@@ -1,0 +1,24 @@
+@startuml
+!include <c4/C4_Context.puml>  
+
+'ref http://plantuml.com/stdlib
+!include <office/Users/user.puml>
+!include <office/Users/mobile_user.puml>
+
+'LAYOUT_WITH_LEGEND
+
+title System Context diagram for Portfolio management app
+
+Person(customer  , Customer , "<$user> <$mobile_user>\n A member of the investment club" )
+
+System(portfolio_app, "Portfolio app", "Allows customers to view portfolio information about their stocks.")
+
+System_Ext(identity_management, "Identity management", "The AWS Identity management Cognito.")
+System_Ext(database, "Database System", "Stores all of the core portfolio about members, stocks, etc.")
+
+Rel(customer, portfolio_app, "Uses")
+
+Rel_Back(customer, identity_management, "Send Tokens", "Tokens")
+Rel_Neighbor(portfolio_app, identity_management, "Send APIS calls", "REST")
+Rel(portfolio_app, database, "Uses")
+@enduml

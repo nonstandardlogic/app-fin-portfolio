@@ -1,0 +1,53 @@
+@startuml
+'!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+!include <c4/C4_Container.puml>  
+
+'ref http://plantuml.com/stdlib
+!include <office/Users/user.puml>
+!include <office/Users/mobile_user.puml>
+
+LAYOUT_WITH_LEGEND()
+
+
+title Container diagram for Internet Banking System
+
+Person(customer  , Customer , "<$user> <$mobile_user>\n A member of the investment club" )
+
+System_Boundary(c1, "Portfolio App") {
+    Container(web_app, "Web App", "StreamLit, Python", "Allows customers to view portfolio information about their stocks.")
+    Container(module_database, "Module Database", "Python", "Provides Database connexion features via API")
+    Container(module_security, "Module Security", "Python", "Provides OAuth connexion features via API")
+    Container(module_payment, "Module payment", "Python", "Provides integration to Payment system")
+    Container(module_finance, "Module finance", "Python", "Provides integration to Finance system")    
+}
+
+System_Ext(identity_management, "Identity Management", "The AWS Identity Management Cognito.")
+System_Ext(payment_management, "Payment Management", "The Payment Platform Stripe.")
+System_Ext(dns_management, "Domain Management", "The DNS Route53 Platform")
+System_Ext(finance_platform, "Finance Platform", "The Yahoo Finance Platform.")
+ContainerDb(database_platform, "Database", "SQL Database", "Stores user registraion information, auth credentials, access logs, etc.")
+
+Rel(customer, web_app, "Uses", "HTTPS")
+
+Rel(web_app, module_database, "Uses", "async")
+Rel(web_app, module_security, "Uses", "async")
+Rel(web_app, module_payment, "Uses", "async")
+Rel(web_app, module_finance, "Uses", "async")
+
+
+
+Rel_Back_Neighbor(identity_management, module_security, "Reads from and writes to", "sync, REST API")
+Rel_Back_Neighbor(database_platform, module_database, "Reads from and writes to", "sync, JDBC")
+Rel_Back_Neighbor(payment_management, module_payment, "Reads from and writes to", "sync, REST API")
+Rel_Back_Neighbor(finance_platform, module_finance, "Reads from and writes to", "sync, REST API")
+
+
+Rel_Back(customer, identity_management, "Sends e-mails to")
+Rel_Back(customer, payment_management, "Sends e-mails to")
+Rel_Back(web_app, module_database, "Sends dataset", "")
+Rel_Back(web_app, module_security, "Sends tokens", "")
+Rel_Back(web_app, module_payment, "Sends tokens", "")
+Rel_Back(web_app, module_finance, "Sends stock data", "JSON")
+
+
+@enduml
