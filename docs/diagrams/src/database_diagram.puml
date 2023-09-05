@@ -1,0 +1,151 @@
+@startuml
+
+!theme plain
+hide empty methods
+
+!procedure $schema($name, $slug)
+package "$name" as $slug <<Rectangle>>
+!endprocedure
+
+!procedure $table($name, $slug)
+entity "<b>$name</b>" as $slug << (T, Orange) table >>
+!endprocedure
+
+!procedure $view($name, $slug)
+entity "<b>$name</b>" as $slug << (V, Aquamarine) view >>
+!endprocedure
+
+!procedure $pk($name)
+<color:#GoldenRod><&key></color> <b>$name</b>
+!endprocedure
+
+!procedure $fk($name)
+<color:#Silver><&key></color> $name
+!endprocedure
+
+!procedure $column($name)
+{field} <color:#White><&media-record></color> $name
+!endprocedure
+
+
+title "Portfolios Database Diagram"
+'  Diagram inspired by https://gist.github.com/sualeh/ea272410356527d3132809061e8ba5b4#file-schema-puml
+
+$schema("PORTFOLIOS SCHEMA", "id_208b5502") {
+
+  $table("TENANTS", "id_f521e750") {
+    $pk("ID"): BIGINT NOT NULL
+    $column("name"): VARCHAR NOT NULL
+    $column("description"): VARCHAR NOT NULL
+    $column("created_at"):  TIMESTAMP(0) NOT NULL
+    $column("updated_at"):  TIMESTAMP(0) NOT NULL
+  }
+  
+  $table("USERS", "id_f521e760") {
+    $pk("ID"): BIGINT NOT NULL
+    $column("TENANDID"): BIGINT NOT NULL
+    $column("name"): VARCHAR NOT NULL
+    $column("description"): VARCHAR NOT NULL
+    $column("email"): VARCHAR NOT NULL,
+    $column("password"):  VARCHAR NOT NULL
+    $column("country_code"):  VARCHAR NULL
+    $column("phone"):  VARCHAR NULL
+    $column("address"):  VARCHAR NULL
+    $column("address_line_2"):  VARCHAR NULL
+    $column("city"):  VARCHAR NULL
+    $column("state"):  VARCHAR NULL
+    $column("zip"):  VARCHAR NULL
+    $column("country"):  VARCHAR NULL
+    $column("created_at"):  TIMESTAMP(0) NOT NULL
+    $column("updated_at"):  TIMESTAMP(0) NOT NULL
+  }
+
+  $table("TEAMS", "id_f521e770") {
+    $pk("ID"): BIGINT NOT NULL
+    $column("TENANDID"): BIGINT NOT NULL
+    $column("name"): VARCHAR NOT NULL
+    $column("description"): VARCHAR NOT NULL
+    $column("subscription_id"):  VARCHAR NULL
+    $column("billing_address"):  VARCHAR NULL
+    $column("billing_address_line_2"):  VARCHAR NULL
+    $column("billing_city"):  VARCHAR NULL
+    $column("billing_state"):  VARCHAR NULL
+    $column("billing_zip"):  VARCHAR NULL
+    $column("billing_country"):  VARCHAR NULL
+    $column("created_at"):  TIMESTAMP(0) NOT NULL
+    $column("updated_at"):  TIMESTAMP(0) NOT NULL
+  }
+
+  $table("TEAM_USERS", "id_f521e775") {
+    $column("TEAMID"):  BIGINT NOT NULL
+    $column("USERID"):  BIGINT NOT NULL
+    $column("ROLE"):  VARCHAR(255) NOT NULL
+  }
+
+  $table("PORTFOLIOS", "id_f521e780") {
+    $pk("ID"): BIGINT NOT NULL
+    $column("TENANDID"): BIGINT NOT NULL
+    $column("name"): VARCHAR NOT NULL
+    $column("description"): VARCHAR NOT NULL
+    $column("created_at"):  TIMESTAMP(0) NOT NULL
+    $column("updated_at"):  TIMESTAMP(0) NOT NULL
+  }
+  
+  $table("TEAM_PORTFOLIOS", "id_f521e785") {
+    $column("TEAMID"):  BIGINT NOT NULL
+    $column("PORTFOLIOID"):  BIGINT NOT NULL
+  }
+  
+  $table("INVESTMENTS", "id_f521e790") {
+    $pk("ID"): BIGINT NOT NULL
+    $column("TENANDID"): BIGINT NOT NULL
+    $column("Account Number"): VARCHAR NOT NULL
+    $column("Account Name"): VARCHAR NOT NULL
+    $column("Symbol"):  VARCHAR NOT NULL
+    $column("Description"):  VARCHAR NULL
+    $column("Quantity"):  VARCHAR NULL
+    $column("created_at"):  TIMESTAMP(0) NOT NULL
+    $column("updated_at"):  TIMESTAMP(0) NOT NULL
+  }
+
+  $table("PORTFOLIO_INVESTMENTS", "id_f521e795") {
+    $column("PORTFOLIOID"):  BIGINT NOT NULL
+    $column("INVESTMENTID"):  BIGINT NOT NULL
+  }
+  
+}
+
+$schema("SUBSCRIPTIONS SCHEMA", "id_7f7f6c20") {
+
+  $table("SUBSCRIPTIONS", "id_751e68cc") {
+    $column("ID"):  BIGINT NOT NULL
+    $pk("TENANDID"): BIGINT NOT NULL
+    $column("description"): VARCHAR NOT NULL
+    $column("stripe_id"):  VARCHAR(255) NOT NULL
+    $column("stripe_plan"):  VARCHAR(255) NOT NULL
+    $column("stripe_status"):  VARCHAR(255) NULL
+    $column("quantity"):  INTEGER NOT NULL
+    $column("trial_ends_at"):  TIMESTAMP(0) ZONE NULL
+    $column("ends_at"):  TIMESTAMP(0) ZONE NULL
+    $column("created_at"):  TIMESTAMP(0) NOT NULL
+    $column("updated_at"):  TIMESTAMP(0) NOT NULL
+  }
+
+}
+
+id_208b5502.id_f521e760::ID  ||--o{ id_208b5502.id_f521e775::USERID : FK_USER
+id_208b5502.id_f521e770::ID  ||--o{ id_208b5502.id_f521e775::TEAMID : FK_TEAM
+
+id_208b5502.id_f521e790::ID  ||--o{ id_208b5502.id_f521e795::INVESTMENTID : FK_INVESTMENTID
+id_208b5502.id_f521e780::ID  ||--o{ id_208b5502.id_f521e795::PORTFOLIOID  : FK_PORTFOLIO 
+
+id_208b5502.id_f521e770::ID  ||--o{ id_208b5502.id_f521e785::TEAMID : FK_TEAM
+id_208b5502.id_f521e780::ID  ||--o{ id_208b5502.id_f521e785::PORTFOLIOID : FK_PORTFOLIO
+
+' id_208b5502.id_f521e760::ID  ||--o{ id_208b5502.id_f521e750::ID : FK_TENANT
+' id_208b5502.id_f521e770::ID  ||--o{ id_208b5502.id_f521e750::ID : FK_TENANT
+' id_208b5502.id_f521e780::ID  ||--o{ id_208b5502.id_f521e750::ID : FK_TENANT
+' id_208b5502.id_f521e790::ID  ||--o{ id_208b5502.id_f521e750::ID : FK_TENANT
+
+
+@enduml
