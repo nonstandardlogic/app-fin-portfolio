@@ -1,0 +1,6 @@
+*.env
+**/.idea
+**/.vscode
+__pycache__/
+.streamlit/secrets.toml
+docs/diagrams/.DS_Store
