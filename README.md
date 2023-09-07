@@ -67,11 +67,19 @@ conda activate portfolio
  conda install -c conda-forge yfinance
 ```
 
-###  Set up the API key 
+###  Set up the Finance API key 
 Obtain a YAHOO token from [Here](https://financeapi.net/) . And create ```secrets.toml``` file inside the ```.streamlit``` folder with the following format:
 ```
 [api]
 YAHOO_TOKEN = "<your_yahoo_finance_token>"
+```
+###  Set up the SMTP credentials 
+```
+[smtp]
+SMTP_SERVER_ADDRESS = "<your_smtp_server_address>"
+PORT = "<your_smtp_server_port>"
+SENDER_ADDRESS  = "<your_smtp_sender_address>"
+SENDER_PASSWORD = "<your_smtp_sender_password>"
 ```
 
 ###  Run App
