@@ -93,11 +93,61 @@ def get_data_for_training(symbol, start_date, end_date):
         return df_final
     return False
 
+@st.cache_data
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Take Raw Fidelity Dataframe and return usable dataframe.
+    - snake_case headers
+    - Include 401k by filling na type
+    - Drop Cash accounts and misc text
+    - Clean $ and % signs from values and convert to floats
 
+    Args:
+        df (pd.DataFrame): Raw fidelity csv data
+
+    Returns:
+        pd.DataFrame: cleaned dataframe with features above
+    """
+    df = df.copy()
+    df.columns = df.columns.str.lower().str.replace(" ", "_", regex=False).str.replace("/", "_", regex=False)
+
+    df.type = df.type.fillna("unknown")
+    df = df.dropna()
+
+    price_index = df.columns.get_loc("last_price")
+    cost_basis_index = df.columns.get_loc("cost_basis_per_share")
+    df[df.columns[price_index : cost_basis_index + 1]] = df[
+        df.columns[price_index : cost_basis_index + 1]
+    ].transform(lambda s: s.str.replace("$", "", regex=False).str.replace("%", "", regex=False).astype(float))
+
+    quantity_index = df.columns.get_loc("quantity")
+    most_relevant_columns = df.columns[quantity_index : cost_basis_index + 1]
+    first_columns = df.columns[0:quantity_index]
+    last_columns = df.columns[cost_basis_index + 1 :]
+    df = df[[*most_relevant_columns, *first_columns, *last_columns]]
+    return df
+
+
+#-------------------------------------------------------
+# Stock data 
+#-------------------------------------------------------
+uploaded_data = open("example.csv", "r")
+raw_data = pd.read_csv(uploaded_data)
+final_data = clean_data(raw_data)
 
 #-------------------------------------------------------
 # Set up sidebar #
 #-------------------------------------------------------
+accounts = list(final_data.account_name.unique())
+account_selections = st.sidebar.multiselect(
+    "Select Accounts to View", options=accounts, default=accounts
+)
+
+symbols = list(final_data.loc[final_data.account_name.isin(account_selections), "symbol"].unique())
+symbol_list = st.sidebar.multiselect(
+    "Select Ticker Symbols to View", options=symbols, default=symbols
+)
+
 today = datetime.date.today()
 tomorrow = today + datetime.timedelta(days=1)
 yesterday = today - datetime.timedelta(days=1)
@@ -109,10 +159,6 @@ if not start_date < end_date:
 
 if end_date > yesterday:
     st.sidebar.error('Error: End date must be equal or older than yesterday.')
-
-# Get symbols from user
-symbol_list = st.sidebar.text_input("Enter Symbols Separated by comma (,)", value='GOOG,TSLA,MSFT',
-                            key='symbols').upper().split(',')
 
 st.info('The chart will not display invalid symbols or symbols that are not listed in the USA market.', icon="⚠️")
 

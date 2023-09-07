@@ -6,7 +6,6 @@ import  functools
 from    pathlib import Path
 import  plotly.express as px
 
-
 #-------------------------------------------------------
 # Set up main app 
 #-------------------------------------------------------
@@ -107,13 +106,10 @@ final_data = clean_data(raw_data)
 #-------------------------------------------------------
 # Set up sidebar 
 #-------------------------------------------------------
-st.sidebar.subheader("Filter Accounts")
 accounts = list(final_data.account_name.unique())
 account_selections = st.sidebar.multiselect(
     "Select Accounts to View", options=accounts, default=accounts
 )
-
-st.sidebar.subheader("Filter Tickers")
 
 symbols = list(final_data.loc[final_data.account_name.isin(account_selections), "symbol"].unique())
 symbol_selections = st.sidebar.multiselect(

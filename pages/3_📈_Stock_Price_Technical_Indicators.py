@@ -309,11 +309,60 @@ class MACD(IndicatorMixin):
             macd_diff_series, name=f"MACD_diff_{self._window_fast}_{self._window_slow}"
         )
     
+
+@st.cache_data
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Take Raw Fidelity Dataframe and return usable dataframe.
+    - snake_case headers
+    - Include 401k by filling na type
+    - Drop Cash accounts and misc text
+    - Clean $ and % signs from values and convert to floats
+
+    Args:
+        df (pd.DataFrame): Raw fidelity csv data
+
+    Returns:
+        pd.DataFrame: cleaned dataframe with features above
+    """
+    df = df.copy()
+    df.columns = df.columns.str.lower().str.replace(" ", "_", regex=False).str.replace("/", "_", regex=False)
+
+    df.type = df.type.fillna("unknown")
+    df = df.dropna()
+
+    price_index = df.columns.get_loc("last_price")
+    cost_basis_index = df.columns.get_loc("cost_basis_per_share")
+    df[df.columns[price_index : cost_basis_index + 1]] = df[
+        df.columns[price_index : cost_basis_index + 1]
+    ].transform(lambda s: s.str.replace("$", "", regex=False).str.replace("%", "", regex=False).astype(float))
+
+    quantity_index = df.columns.get_loc("quantity")
+    most_relevant_columns = df.columns[quantity_index : cost_basis_index + 1]
+    first_columns = df.columns[0:quantity_index]
+    last_columns = df.columns[cost_basis_index + 1 :]
+    df = df[[*most_relevant_columns, *first_columns, *last_columns]]
+    return df
+
+
+#-------------------------------------------------------
+# Stock data 
+#-------------------------------------------------------
+uploaded_data = open("example.csv", "r")
+raw_data = pd.read_csv(uploaded_data)
+final_data = clean_data(raw_data)
+
 #-------------------------------------------------------
 # Set up sidebar 
 #-------------------------------------------------------
 # Add in location to select image.
-option = st.sidebar.selectbox('Select one symbol', ( 'AAPL', 'MSFT',"SPY",'WMT'))
+accounts = list(final_data.account_name.unique())
+account_selections = st.sidebar.multiselect(
+    "Select Accounts to View", options=accounts, default=accounts
+)
+
+symbols = list(final_data.loc[final_data.account_name.isin(account_selections), "symbol"].unique())
+option = st.sidebar.selectbox('Select one symbol', options=symbols)
 
 import datetime
 today = datetime.date.today()
