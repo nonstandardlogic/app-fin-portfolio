@@ -25,7 +25,7 @@ hide_streamlit_style = """
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-st.header("Closing price and daily returns comparator")
+st.header("Closing price and Daily returns comparator")
 
 def get_stock_data_by_symbol(symbol: str):
     url = "https://alpha.financeapi.net/symbol/get-chart?period=MAX&symbol=" + symbol
