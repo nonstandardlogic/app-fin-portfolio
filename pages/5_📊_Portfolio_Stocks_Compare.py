@@ -18,7 +18,14 @@ st.set_page_config(
         initial_sidebar_state="expanded",
         layout="wide",
 )
-
+hide_streamlit_style = """
+            <style>
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.header("Closing price and daily returns comparator")
 
 def get_stock_data_by_symbol(symbol: str):
     url = "https://alpha.financeapi.net/symbol/get-chart?period=MAX&symbol=" + symbol
@@ -86,7 +93,7 @@ def get_data_for_training(symbol, start_date, end_date):
         return df_final
     return False
 
-st.header("Closing price and daily returns comparator")
+
 
 #-------------------------------------------------------
 # Set up sidebar #
@@ -132,14 +139,14 @@ if st.sidebar.button('Run'):
             # Fill missing values
             df_data = fill_missing_values(df_data)
 
-            st.header('Closing price by stock symbol')
+            st.write('Closing price by stock symbol')
             st.line_chart(df_data)
             with st.expander("What is closing price?"):
                 st.write(
                     """The closing price is the raw price or cash value of the last transacted price in a security before the market officially closes for normal trading. It is often the reference point used by investors to compare a stock's performance since the previous day""")
 
             daily_returns = compute_daily_returns(df_data)
-            st.header('Daily returns by stock symbol')
+            st.write('Daily returns by stock symbol')
             st.line_chart(daily_returns)
             with st.expander("What is daily return?"):
                 st.write(

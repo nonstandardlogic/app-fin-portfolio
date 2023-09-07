@@ -16,6 +16,14 @@ st.set_page_config(
         initial_sidebar_state="expanded",
         layout="wide",
 )
+hide_streamlit_style = """
+            <style>
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.header("Portfolio Dashboard")
 
 chart = functools.partial(st.plotly_chart, use_container_width=True)
 COMMON_ARGS = {

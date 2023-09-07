@@ -4,10 +4,17 @@ st.set_page_config(
         page_title="Portfolio Contact", 
         page_icon="📈", 
         initial_sidebar_state="expanded",
-        layout="wide",
+        layout="wide"
 )
-
+hide_streamlit_style = """
+            <style>
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.header("Contact Information")
+
 
 with st.form(key='columns_in_form2',clear_on_submit=True): #set clear_on_submit=True so that the form will be reset/cleared once it's submitted
     Name=st.text_input(label='Please Enter Your Name') #Collect user feedback

@@ -15,7 +15,14 @@ st.set_page_config(
         initial_sidebar_state="expanded",
         layout="wide",
 )
-
+hide_streamlit_style = """
+            <style>
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.header("Stock Price Technical Indicators")
 
 #-------------------------------------------------------
 # Technical Analysis Classes 
@@ -342,8 +349,11 @@ rsi = RSIIndicator(df['Close']).rsi()
 #-------------------------------------------------------
 st.write('Stock Bollinger Bands')
 st.line_chart(bb)
+# progress_bar = st.progress(0)
+with st.expander("What is Stock Bollinger Bands ?"):
+    st.write(
+        """Bollinger bands help determine whether prices are high or low on a relative basis. They are used in pairs, both upper and lower bands, and in conjunction with a moving average.""")
 
-progress_bar = st.progress(0)
 
 # https://share.streamlit.io/daniellewisdl/streamlit-cheat-sheet/app.py
 
@@ -352,16 +362,19 @@ progress_bar = st.progress(0)
 #-------------------------------------------------------
 st.write('Stock Moving Average Convergence Divergence (MACD)')
 st.area_chart(macd)
-
-progress_bar = st.progress(0)
-
+# progress_bar = st.progress(0)
+with st.expander("What is Stock Moving Average Convergence Divergence (MACD) ?"):
+    st.write(
+        """MACD is the most popular price oscillator. MACD is set as the difference between the 12-period simple moving average (SMA) and 26-period simple moving average.""")
 
 #-------------------------------------------------------
 # Stock RSI Chart                                     
 #-------------------------------------------------------
-st.write('Stock RSI ')
+st.write('Stock RSI')
 st.line_chart(rsi)
-
+with st.expander("What is Stock RSI ?"):
+    st.write(
+        """Stock RSI measures the magnitude of recent price changes to evaluate overbought or oversold conditions. It is displayed as an oscillator and can have a reading from 0 to 100.""")
 
 #-------------------------------------------------------
 # Recent Data Chart                                   
