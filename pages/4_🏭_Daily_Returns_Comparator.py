@@ -18,6 +18,15 @@ st.set_page_config(
         initial_sidebar_state="expanded",
         layout="wide",
 )
+padding_top = 0
+st.markdown(f"""
+    <style>
+        .block-container{{
+            padding-top: {padding_top}rem;
+        }}
+    </style>""",
+    unsafe_allow_html=True,
+)
 hide_streamlit_style = """
             <style>
             [data-testid="stToolbar"] {visibility: hidden !important;}

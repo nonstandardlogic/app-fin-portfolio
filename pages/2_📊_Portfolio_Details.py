@@ -19,6 +19,15 @@ st.set_page_config(
         initial_sidebar_state="expanded",
         layout="wide",
 )
+padding_top = 0
+st.markdown(f"""
+    <style>
+        .block-container{{
+            padding-top: {padding_top}rem;
+        }}
+    </style>""",
+    unsafe_allow_html=True,
+)
 hide_streamlit_style = """
             <style>
             [data-testid="stToolbar"] {visibility: hidden !important;}
@@ -31,7 +40,7 @@ st.header("Portfolio Stocks Details")
 chart = functools.partial(st.plotly_chart, use_container_width=True)
 COMMON_ARGS = {
     "color": "symbol",
-    "color_discrete_sequence": px.colors.sequential.Greens,
+    "color_discrete_sequence": px.colors.sequential.Blues,
     "hover_data": [
         "account_name",
         "percent_of_account",
@@ -135,7 +144,7 @@ def draw_bar(y_val: str) -> None:
 # Charts -- Total Value gained each Symbol             
 #           Total Percent Value gained each Symbol     
 #-------------------------------------------------------  
-colTable1, colTable2 = st.columns(2)
+colTable1, colTable2 = st.columns(2, gap = "large")
 with colTable1:
         st.write("Total Value gained each Symbol")
         draw_bar("total_gain_loss_dollar")
